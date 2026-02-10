@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="style.css">
+  <script src="chart.min.js"></script>
+  <script src="confetti.browser.min.js"></script>
+</head>
+<body>
+  <div id="auth-modal" class="modal-overlay" style="display: none;">
+    <div class="glass-card modal-content">
+      <div class="logo">BackTo<span>Track</span></div>
+      <p style="font-size: 12px; margin-bottom: 20px; color: #94a3b8;">Login with Email & Password to Sync</p>
+      <input type="email" id="auth-email" class="main-input" placeholder="Email Address">
+      <input type="password" id="auth-pw" class="main-input" placeholder="Password">
+      <button id="btn-login" class="glow-button">Login & Sync</button>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="header-top">
+        <div class="logo">BackTo<span>Track</span></div>
+        
+        <div class="coin-wallet">
+            <span style="font-size: 14px;">🪙</span>
+            <span id="coin-balance" style="font-weight: bold; color: #fbbf24;">0</span>
+        </div>
+
+        <div class="user-info-side">
+            <div id="greeting" class="user-greeting">Hi, Guest</div>
+            <div class="profile-section">
+                <div class="profile-circle" id="profile-trigger">
+                    <img id="profile-img" src="" style="display:none;">
+                    <div id="profile-initials">?</div>
+                    <div class="nav-arrow">▼</div>
+                </div>
+                <div id="nav-menu" class="glass-card dropdown-menu" style="display: none;">
+                    <div class="menu-item" id="nav-upload">📷 Change Photo</div>
+                    <div class="menu-divider"></div>
+                    <div class="menu-item" id="nav-main">🏠 Dashboard</div>
+                    <div class="menu-item" id="nav-store">🛍️ Rewards Store</div>
+                    <div class="menu-item" id="nav-tasks">✅ Tasks</div>
+                    <div class="menu-item" id="nav-leaderboard">🏆 Leaderboard</div>
+                    <div class="menu-item" id="nav-analysis">📊 Analysis</div>
+                    <div class="menu-item" id="nav-settings">⚙️ Focus Hours</div>
+                    <div class="menu-divider"></div>
+                    <div class="menu-item" id="nav-name">✏️ Edit Name</div>
+                    <div class="menu-item" id="nav-reset">🗑️ Reset Photo</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <input type="file" id="profile-upload" accept="image/*" style="display: none;">
+
+    <div id="view-main" class="view">
+        <div class="glass-card">
+            <div class="score-widget">
+                <div class="score-header">
+                  <span style="color: #cbd5e1; font-size: 11px;">PRODUCTIVITY SCORE</span>
+                  <span id="score-value" style="font-size: 20px;">0</span>
+                </div>
+                <div class="progress-bg">
+                  <div id="score-bar" class="progress-fill" style="width: 0%;"></div>
+                </div>
+                <p id="score-message">Neutral. Time to grind tasks.</p>
+            </div>
+
+            <input type="text" id="site-input" class="main-input" placeholder="Enter site (e.g. reddit.com)">
+            <button id="add-site" class="glow-button">Add to Track List</button>
+
+            <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.1); margin: 20px 0;">
+
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px;">
+                <span style="font-size: 12px; color: #8B5CF6; font-weight: bold;">VIEW HISTORY:</span>
+                <input type="date" id="date-picker" class="main-input" style="width: 140px; margin-bottom: 0;">
+            </div>
+
+            <div id="stats-container"></div>
+        </div>
+    </div>
+
+    <div id="view-store" class="view" style="display: none;">
+        <div class="glass-card">
+            <h3 class="view-title">Redeem Your Effort</h3>
+            <p style="font-size: 11px; color: #94a3b8; margin-bottom: 15px;">
+                Exchange coins for real-world subscriptions.
+            </p>
+
+            <div id="store-grid"></div>
+
+            <div class="sponsor-card" id="sponsor-btn">
+                <span style="font-size: 20px;">🤝</span>
+                <div>
+                    <div style="font-weight: bold; color: white;">Partner with us</div>
+                    <div style="font-size: 10px; color: #94a3b8;">Feature your product here</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="view-settings" class="view" style="display: none;">
+        <div class="glass-card">
+            <h3 class="view-title">Set Focus Hours</h3>
+            <p style="font-size: 12px; color: #94a3b8; margin-bottom: 20px;">
+                Select your most productive hours. Using tracked sites during this time will drain your score <b>4x faster</b>.
+            </p>
+            
+            <label style="font-size: 12px; color: #8B5CF6; font-weight: bold;">START TIME</label>
+            <input type="time" id="focus-start" class="main-input">
+            
+            <label style="font-size: 12px; color: #8B5CF6; font-weight: bold;">END TIME</label>
+            <input type="time" id="focus-end" class="main-input">
+
+            <button id="save-settings" class="glow-button">Save Settings</button>
+            <p id="settings-msg" style="font-size: 11px; color: #4ade80; margin-top: 10px; min-height: 15px;"></p>
+        </div>
+    </div>
+
+    <div id="view-analysis" class="view" style="display: none;">
+        <div class="glass-card">
+            <h3 class="view-title">Usage Analytics</h3>
+            <canvas id="usageChart" width="300" height="200"></canvas>
+            
+            <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.1); margin: 20px 0;">
+            
+            <h4 style="font-size: 12px; color: #8B5CF6; text-align: left; margin: 10px 0;">Manage Tracked Sites</h4>
+            <div id="manage-sites-list" class="scroll-area" style="max-height: 120px;"></div>
+        </div>
+    </div>
+
+    <div id="view-tasks" class="view" style="display: none;">
+        <div class="glass-card">
+            <h3 class="view-title">Tasks & Deadlines</h3>
+            <p style="font-size: 10px; color:#4ade80; margin-bottom: 10px;">✨ Reward: +10 Coins per task</p>
+            <input type="text" id="task-name" class="main-input" placeholder="What needs doing?">
+            <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                <input type="time" id="task-deadline" class="main-input" style="margin-bottom: 0;">
+                <button id="add-task" class="glow-button" style="width: 80px;">Add</button>
+            </div>
+            <div id="task-list" class="scroll-area"></div>
+        </div>
+    </div>
+
+    <div id="view-leaderboard" class="view" style="display: none;">
+        <div class="glass-card">
+            <h3 class="view-title">Global Leaderboard</h3>
+            <div id="group-actions">
+                <input type="text" id="group-code-input" class="main-input" placeholder="Enter 6-digit Code" maxlength="6">
+                <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                    <button id="join-group-btn" class="glow-button" style="background: #2563eb;">Join</button>
+                    <button id="create-group-btn" class="glow-button" style="background: #7c3aed;">Create New</button>
+                </div>
+                <p id="group-error" style="color: #f87171; font-size: 12px; margin-top: 5px;"></p>
+            </div>
+            <div id="leaderboard-display" style="display: none;">
+                <div class="group-header-info">
+                    <span>GROUP: <span id="display-code" style="color:#8B5CF6; font-weight:bold;">000000</span></span>
+                    <button id="leave-group" style="background:none; border:none; color:#f87171; cursor:pointer; font-size:12px;">Leave</button>
+                </div>
+                <div id="leaderboard-list" class="scroll-area"></div>
+                <button id="refresh-board" class="glow-button" style="margin-top: 15px; font-size: 12px; padding: 8px;">🔄 Refresh Ranks</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="view-name" class="view" style="display: none;">
+        <div class="glass-card">
+            <h3 class="view-title">Update Name</h3>
+            <input type="text" id="edit-name-input" class="main-input" placeholder="Enter new name">
+            <button id="save-new-name" class="glow-button">Save Name</button>
+        </div>
+    </div>
+
+  </div>
+  
+  <div id="name-modal" class="modal-overlay" style="display: none;">
+    <div class="glass-card modal-content">
+      <h3 style="margin-top: 0; color: #8B5CF6;">Welcome!</h3>
+      <input type="text" id="name-input" class="main-input" placeholder="Enter your name">
+      <button id="save-name" class="glow-button">Start Tracking</button>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
